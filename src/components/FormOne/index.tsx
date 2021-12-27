@@ -1,29 +1,35 @@
-import Form from '../MultistepForm';
+import MultistepForm from '../MultistepForm';
+import MultistepFormItem from '../MultistepFormItem';
 import Input from '../Input';
 import { useEffect, useState } from 'react';
+import itemHasError from '../../utils/itemHasErrors';
 
 export interface ValuesProps {
 	name?: string;
 	email?: string;
+	teste?: string;
 }
 
 interface FormOneProps {
 	title: string;
 	values: ValuesProps;
 	onChange: (field: string, value: any) => void;
+	errors: object | undefined;
 }
 
-const FormOne = ({ title = 'Step', values = {}, onChange }: FormOneProps) => {
+const FormOne = ({ title = 'Step', values = {}, onChange, errors }: FormOneProps) => {
 	const [data, setData] = useState<ValuesProps>({});
+	const [formErrors, setFormErrors] = useState(errors);
 
 	useEffect(() => {
 		setData(values);
-	}, [values])
+		setFormErrors(errors);
+	}, [values, errors])
 
 	return (
-		<Form title={title} onSubmit={() => {}}>
-			<div
-				className="bg-white p-4 flex rounded-md border-yellow-500 border-2"
+		<MultistepForm title={title} onSubmit={() => {}}>
+			<MultistepFormItem
+				hasError={itemHasError(['name'], formErrors)}
 			>
 				<div>
 					<h4>Nome</h4>
@@ -34,10 +40,10 @@ const FormOne = ({ title = 'Step', values = {}, onChange }: FormOneProps) => {
 						onChange={e => onChange('name', e.target.value)}
 					/>
 				</div>
-			</div>
+			</MultistepFormItem>
 
-			<div
-				className="bg-white p-4 flex rounded-md border-red-500 border-2"
+			<MultistepFormItem
+				hasError={itemHasError(['email'], formErrors)}
 			>
 				<div>
 					<h4>Email</h4>
@@ -48,9 +54,17 @@ const FormOne = ({ title = 'Step', values = {}, onChange }: FormOneProps) => {
 						value={data.email || ''}
 						onChange={e => onChange('email', e.target.value)}
 					/>
+
+					<h5>Teste</h5>
+					<Input 
+						name='teste'
+						placeholder='teste'
+						value={data.teste || ''}
+						onChange={e => onChange('teste', e.target.value)}
+					/>
 				</div>
-			</div>
-		</Form>
+			</MultistepFormItem>
+		</MultistepForm>
 	);
 }
 

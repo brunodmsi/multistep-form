@@ -1,6 +1,8 @@
 import Form from '../MultistepForm';
 import Input from '../Input';
 import { useEffect, useState } from 'react';
+import MultistepFormItem from '../MultistepFormItem';
+import itemHasError from '../../utils/itemHasErrors';
 
 export interface ValuesProps {
 	twitter?: string;
@@ -11,19 +13,22 @@ interface FormTwoProps {
 	title: string;
 	values: ValuesProps;
 	onChange: (field: string, value: any) => void;
+	errors: object | undefined;
 }
 
-const FormTwo = ({ title = 'Step', values = {}, onChange }: FormTwoProps) => {
+const FormTwo = ({ title = 'Step', values = {}, onChange, errors }: FormTwoProps) => {
 	const [data, setData] = useState<ValuesProps>({});
+	const [formErrors, setFormErrors] = useState(errors);
 
 	useEffect(() => {
 		setData(values);
-	}, [values])
+		setFormErrors(errors);
+	}, [values, errors])
 
 	return (
 		<Form title={title} onSubmit={() => {}}>
-			<div
-				className="bg-white p-4 flex rounded-md border-yellow-500 border-2"
+			<MultistepFormItem
+				hasError={itemHasError(['twitter'], formErrors)}
 			>
 				<div>
 					<h4>Twitter</h4>
@@ -34,10 +39,10 @@ const FormTwo = ({ title = 'Step', values = {}, onChange }: FormTwoProps) => {
 						onChange={e => onChange('twitter', e.target.value)}
 					/>
 				</div>
-			</div>
+			</MultistepFormItem>
 
-			<div
-				className="bg-white p-4 flex rounded-md border-red-500 border-2"
+			<MultistepFormItem
+				hasError={itemHasError(['facebook'], formErrors)}
 			>
 				<div>
 					<h4>Facebook</h4>
@@ -48,7 +53,7 @@ const FormTwo = ({ title = 'Step', values = {}, onChange }: FormTwoProps) => {
 						onChange={e => onChange('facebook', e.target.value)}
 					/>
 				</div>
-			</div>
+			</MultistepFormItem>
 		</Form>
 	);
 }

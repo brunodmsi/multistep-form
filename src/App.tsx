@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
+import { FaExclamationCircle } from 'react-icons/fa';
+import * as Yup from 'yup';
 import FormOne from './components/FormOne';
 import FormTwo from './components/FormTwo';
 import Header from './components/Header';
 import { getDraftByPrimaryId, updateDraft } from './services/api';
+import getValidationErrors from './utils/getValidationErrors';
 
 type Details = {
   dev?: string;
@@ -14,12 +17,39 @@ interface Step {
   name: string;
   details: Details;
   data: object;
+  errors?: object;
 }
+
+interface ErrorData {
+  reference_id: string;
+  errors: object;
+}
+
+interface Error {
+  hasError: boolean;
+  type: 'draft' | 'save';
+  data: ErrorData[];
+}
+
+const form1Schema = Yup.object().shape({
+  name: Yup.string().required(),
+  email: Yup.string().email().required(),
+});
+
+const form2Schema = Yup.object().shape({
+  twitter: Yup.string().required(),
+  facebook: Yup.string().required(),
+})
 
 function App() {
   const [draftId, setDraftId] = useState<string>('');
   const [steps, setSteps] = useState<Step[]>([]);
   const [selectedStepId, setSelectedStepId] = useState<string>('');
+  const [errors, setErrors] = useState<Error>({
+    hasError: false,
+    type: 'draft',
+    data: []
+  });
 
   useEffect(() => {
     getDraftByPrimaryId('4657c306-0e14-40d3-b770-6accff5c6027')
@@ -31,8 +61,49 @@ function App() {
       })
   }, []);
 
-  const onSaveDraft = useCallback(() => {
-    updateDraft(draftId, { data: steps })
+  const getErrorByReferenceId = (id: string) => {
+    if (!errors.hasError || errors.data.length === 0) 
+      return undefined;
+
+    return errors.data.find(stepError => stepError.reference_id === id)?.errors;
+  }
+
+  const onSaveDraft = useCallback(async () => {
+    const draftErrorSteps: ErrorData[] = [];
+
+    for (let step of steps) {
+      try {
+        if (step.type === 'form_1') {
+          await form1Schema.validate(step.data, {
+            abortEarly: false
+          });
+        } else if (step.type === 'form_2') {
+          await form2Schema.validate(step.data, {
+            abortEarly: false
+          });
+        }
+      } catch (err) {
+        let errors;
+        if (err instanceof Yup.ValidationError) {
+          errors = getValidationErrors(err);
+        }
+
+        draftErrorSteps.push({
+          reference_id: step.reference_id,
+          errors: errors || {}
+        });
+      }
+    }
+
+    setErrors({
+      hasError: true,
+      type: 'draft',
+      data: draftErrorSteps
+    })
+
+    updateDraft(draftId, { 
+      data: steps
+    });
   }, [draftId, steps])
 
   const onChangeFields = useCallback((field: string, value: any) => {
@@ -60,6 +131,7 @@ function App() {
           title={actualStep.name} 
           values={actualStep.data} 
           onChange={onChangeFields} 
+          errors={getErrorByReferenceId(actualStep.reference_id)}
         />
       )
     if (actualStep.type === 'form_2') 
@@ -68,6 +140,7 @@ function App() {
           title={actualStep.name} 
           values={actualStep.data} 
           onChange={onChangeFields} 
+          errors={getErrorByReferenceId(actualStep.reference_id)}
         />
       )
   }
@@ -82,10 +155,17 @@ function App() {
             {steps.map(step => (
               <div
                 key={step.reference_id}
-                className={`p-3 text-white rounded-md cursor-pointer ${selectedStepId === step.reference_id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
+                className={`flex flex-row items-center justify-between p-3 text-white rounded-md cursor-pointer ${selectedStepId === step.reference_id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
                 onClick={() => setSelectedStepId(step.reference_id)}
               >
                 <p className="text-white">{step.name}</p>
+                {
+                  getErrorByReferenceId(step.reference_id) && (
+                    errors.type === 'draft' 
+                      ? <FaExclamationCircle className="text-yellow-500" /> 
+                      : <FaExclamationCircle className="text-red-500" /> 
+                  )
+                }
               </div>
             ))}
           </div>
