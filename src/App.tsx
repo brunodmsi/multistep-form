@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import FormOne from './components/FormOne';
 import Header from './components/Header';
 
-const steps: Step[] = [
+const mockSteps: Step[] = [
   {
     type: 'form_1',
     id: 1,
@@ -10,21 +10,28 @@ const steps: Step[] = [
     details: {
       dev: 'bruno'
     },
-    data: {}
+    data: {
+      name: 'Bruno',
+    }
   },
   {
     type: 'form_1',
     id: 2,
     name: 'Step 2',
     details: {},
-    data: {}
+    data: {
+      name: 'Jorge',
+      email: 'jorge@ex.com'
+    }
   },
   {
     type: 'form_2',
     id: 3,
     name: 'Step 3',
     details: {},
-    data: {}
+    data: {
+      name: 'Beto',
+    }
   },
 ];
 
@@ -41,37 +48,75 @@ interface Step {
 }
 
 function App() {
-  const [selectedStep, setSelectedStep] = useState<Step>(steps[0]);
+  const [steps, setSteps] = useState(mockSteps);
+  const [selectedStepId, setSelectedStepId] = useState<number>(steps[0].id);
+
+  const onChangeFields = useCallback((field: string, value: any) => {
+    const actualStepIdx = steps.findIndex(step => selectedStepId === step.id);
+
+    const updatedData = {
+      ...steps[actualStepIdx].data,
+      [field]: value
+    };
+
+    setSteps((oldSteps) => {
+      const tmp = [...oldSteps]
+      tmp[actualStepIdx].data = updatedData 
+      return tmp;
+    }) 
+  }, [steps, selectedStepId]);
+
+  const renderForm = (id: number) => {
+    const actualStep = steps.find(step => id === step.id); 
+    if (!actualStep) return;
+
+    if (actualStep.type === 'form_1') 
+      return <FormOne title={actualStep.name} values={actualStep.data} onChange={onChangeFields} />
+    if (actualStep.type === 'form_2') 
+      return <FormOne title={actualStep.name} values={actualStep.data} onChange={onChangeFields} />
+  }
 
   return (
     <>
       <Header />
 
-      <div className="mt-5 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-        <div className="grid grid-rows-3 col-span-1 grid-cols-1 gap-5">
-          {steps.map(step => (
-            <div
-              key={step.id}
-              className={`p-3 text-white rounded-md cursor-pointer ${selectedStep.id === step.id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
-              onClick={() => setSelectedStep(step)}
-            >
-              <p className="text-white">{step.name}</p>
-              <div className={`${Object.keys(step.details).length === 0 ? 'appearance-none' : 'text-sm'}`}>
-                {step.details.dev && (
-                  <span>Dev: {step.details.dev}</span>
-                )}
+      <div className="flex flex-col w-full">
+        <div className="mt-5 grid grid-cols-3 gap-8 max-w-2xl w-full mx-auto">
+          <div className="grid grid-rows-3 col-span-1 grid-cols-1 gap-5">
+            {steps.map(step => (
+              <div
+                key={step.id}
+                className={`p-3 text-white rounded-md cursor-pointer ${selectedStepId === step.id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
+                onClick={() => setSelectedStepId(step.id)}
+              >
+                <p className="text-white">{step.name}</p>
+                <div className={`${Object.keys(step.details).length === 0 ? 'appearance-none' : 'text-sm'}`}>
+                  {step.details.dev && (
+                    <span>Dev: {step.details.dev}</span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="col-span-2">
+            {renderForm(selectedStepId)}
+          </div>
         </div>
 
-        <div className="col-span-2">
-          {selectedStep.type === 'form_1' && (
-            <FormOne title={selectedStep.name} />
-          )} 
-          {selectedStep.type === 'form_2' && (
-            <FormOne title={selectedStep.name} />
-          )} 
+        <div className="grid grid-rows-1 grid-cols-2 mx-auto mt-4">
+          <button
+            className="border-indigo-500 border-1 p-3 rounded-md text-indigo-500 hover:font-bold transition-all mr-2"
+            onClick={() => {}}
+          >
+            Save draft
+          </button>
+          <button
+            className="bg-indigo-500 p-3 rounded-md text-white hover:bg-indigo-600 transition-colors"
+            onClick={() => {}}
+          >
+            Save
+          </button>
         </div>
       </div>
     </>

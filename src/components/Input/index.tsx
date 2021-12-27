@@ -22,7 +22,7 @@ const Input = ({ name, ...rest }: InputProps) => {
 
 	return (
 		<div
-			className={`${isFilled ? 'border-indigo-500' : isFocused ? 'border-indigo-500' : 'border-black'} rounded-sm bg-white p-2	text-indigo-500 flex items-center border-1 border-opacity-50`}
+			className={`${isFilled ? 'border-indigo-500' : isFocused ? 'border-indigo-500' : 'border-black'} rounded-sm bg-white p-1	text-indigo-500 flex items-center border-1 border-opacity-50`}
 		>
 			<input
 				className='flex-1 bg-transparent border-none'

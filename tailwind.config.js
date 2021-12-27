@@ -9,7 +9,11 @@ module.exports = {
   theme: {
     extend: {},
     borderWidth: {
-      '1': '1px'
+      'DEFAULT': '1',
+      '1': '1px',
+      '2': '2px',
+      '3': '3px',
+      '4': '4px',
     }
   },
   plugins: [],
