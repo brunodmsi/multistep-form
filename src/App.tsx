@@ -55,9 +55,21 @@ function App() {
     if (!actualStep) return;
 
     if (actualStep.type === 'form_1') 
-      return <FormOne title={actualStep.name} values={actualStep.data} onChange={onChangeFields} />
+      return (
+        <FormOne 
+          title={actualStep.name} 
+          values={actualStep.data} 
+          onChange={onChangeFields} 
+        />
+      )
     if (actualStep.type === 'form_2') 
-      return <FormTwo title={actualStep.name} values={actualStep.data} onChange={onChangeFields} />
+      return (
+        <FormTwo
+          title={actualStep.name} 
+          values={actualStep.data} 
+          onChange={onChangeFields} 
+        />
+      )
   }
 
   return (
@@ -65,7 +77,7 @@ function App() {
       <Header />
 
       <div className="flex flex-col w-full">
-        <div className="mt-5 grid grid-cols-3 gap-8 max-w-2xl w-full mx-auto">
+        <div className="mt-5 grid grid-cols-4 gap-8 max-w-4xl w-full mx-auto">
           <div className="grid grid-rows-3 col-span-1 grid-cols-1 gap-5">
             {steps.map(step => (
               <div
@@ -74,16 +86,11 @@ function App() {
                 onClick={() => setSelectedStepId(step.reference_id)}
               >
                 <p className="text-white">{step.name}</p>
-                <div className={`${Object.keys(step.details).length === 0 ? 'appearance-none' : 'text-sm'}`}>
-                  {step.details.dev && (
-                    <span>Dev: {step.details.dev}</span>
-                  )}
-                </div>
               </div>
             ))}
           </div>
 
-          <div className="col-span-2">
+          <div className="col-span-3">
             {renderForm(selectedStepId)}
           </div>
         </div>
