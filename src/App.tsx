@@ -1,39 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import FormOne from './components/FormOne';
+import FormTwo from './components/FormTwo';
 import Header from './components/Header';
-
-const mockSteps: Step[] = [
-  {
-    type: 'form_1',
-    id: 1,
-    name: 'Step 1',
-    details: {
-      dev: 'bruno'
-    },
-    data: {
-      name: 'Bruno',
-    }
-  },
-  {
-    type: 'form_1',
-    id: 2,
-    name: 'Step 2',
-    details: {},
-    data: {
-      name: 'Jorge',
-      email: 'jorge@ex.com'
-    }
-  },
-  {
-    type: 'form_2',
-    id: 3,
-    name: 'Step 3',
-    details: {},
-    data: {
-      name: 'Beto',
-    }
-  },
-];
+import { getDraftByPrimaryId, updateDraft } from './services/api';
 
 type Details = {
   dev?: string;
@@ -41,18 +10,33 @@ type Details = {
 
 interface Step {
   type: string;
-  id: number;
+  reference_id: string;
   name: string;
   details: Details;
   data: object;
 }
 
 function App() {
-  const [steps, setSteps] = useState(mockSteps);
-  const [selectedStepId, setSelectedStepId] = useState<number>(steps[0].id);
+  const [draftId, setDraftId] = useState<string>('');
+  const [steps, setSteps] = useState<Step[]>([]);
+  const [selectedStepId, setSelectedStepId] = useState<string>('');
+
+  useEffect(() => {
+    getDraftByPrimaryId('4657c306-0e14-40d3-b770-6accff5c6027')
+      .then(({ data: response }) => {
+        const draft = response[0];
+        setSteps(draft.data);
+        setSelectedStepId(draft.data[0].reference_id);
+        setDraftId(draft.id);
+      })
+  }, []);
+
+  const onSaveDraft = useCallback(() => {
+    updateDraft(draftId, { data: steps })
+  }, [draftId, steps])
 
   const onChangeFields = useCallback((field: string, value: any) => {
-    const actualStepIdx = steps.findIndex(step => selectedStepId === step.id);
+    const actualStepIdx = steps.findIndex(step => selectedStepId === step.reference_id);
 
     const updatedData = {
       ...steps[actualStepIdx].data,
@@ -64,16 +48,16 @@ function App() {
       tmp[actualStepIdx].data = updatedData 
       return tmp;
     }) 
-  }, [steps, selectedStepId]);
+  }, [steps, selectedStepId, setSteps]);
 
-  const renderForm = (id: number) => {
-    const actualStep = steps.find(step => id === step.id); 
+  const renderForm = (id: string) => {
+    const actualStep = steps.find(step => id === step.reference_id); 
     if (!actualStep) return;
 
     if (actualStep.type === 'form_1') 
       return <FormOne title={actualStep.name} values={actualStep.data} onChange={onChangeFields} />
     if (actualStep.type === 'form_2') 
-      return <FormOne title={actualStep.name} values={actualStep.data} onChange={onChangeFields} />
+      return <FormTwo title={actualStep.name} values={actualStep.data} onChange={onChangeFields} />
   }
 
   return (
@@ -85,9 +69,9 @@ function App() {
           <div className="grid grid-rows-3 col-span-1 grid-cols-1 gap-5">
             {steps.map(step => (
               <div
-                key={step.id}
-                className={`p-3 text-white rounded-md cursor-pointer ${selectedStepId === step.id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
-                onClick={() => setSelectedStepId(step.id)}
+                key={step.reference_id}
+                className={`p-3 text-white rounded-md cursor-pointer ${selectedStepId === step.reference_id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
+                onClick={() => setSelectedStepId(step.reference_id)}
               >
                 <p className="text-white">{step.name}</p>
                 <div className={`${Object.keys(step.details).length === 0 ? 'appearance-none' : 'text-sm'}`}>
@@ -107,7 +91,7 @@ function App() {
         <div className="grid grid-rows-1 grid-cols-2 mx-auto mt-4">
           <button
             className="border-indigo-500 border-1 p-3 rounded-md text-indigo-500 hover:font-bold transition-all mr-2"
-            onClick={() => {}}
+            onClick={onSaveDraft}
           >
             Save draft
           </button>

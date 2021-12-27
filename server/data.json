@@ -1,0 +1,63 @@
+{
+  "drafts": [
+    {
+      "data": [
+        {
+          "type": "form_1",
+          "reference_id": "fecc997d-4abc-44c9-9413-adbfd2eb18b3",
+          "name": "Step 1",
+          "details": {
+            "dev": "bruno"
+          },
+          "data": {
+            "name": "teste",
+            "email": "bruno@ex.com"
+          }
+        },
+        {
+          "type": "form_1",
+          "reference_id": "df6bcb6d-acae-4de7-a9b5-d99068d440c8",
+          "name": "Step 2",
+          "details": {},
+          "data": {}
+        },
+        {
+          "type": "form_2",
+          "reference_id": "98a5b4d5-f433-4d5b-9f03-36f4cea5981f",
+          "name": "Step 3",
+          "details": {},
+          "data": {
+            "twitter": "teste"
+          }
+        }
+      ],
+      "id": "1212"
+    }
+  ],
+  "primaries": [
+    {
+      "id": "4657c306-0e14-40d3-b770-6accff5c6027",
+      "code": 4141499,
+      "data_1": [
+        {
+          "id": "fecc997d-4abc-44c9-9413-adbfd2eb18b3",
+          "primary_id": "4657c306-0e14-40d3-b770-6accff5c6027",
+          "dev": "Bruno",
+          "description": "A guy that codes"
+        },
+        {
+          "id": "df6bcb6d-acae-4de7-a9b5-d99068d440c8",
+          "primary_id": "4657c306-0e14-40d3-b770-6accff5c6027",
+          "dev": "Jorge",
+          "description": null
+        }
+      ],
+      "data_2": [
+        {
+          "id": "98a5b4d5-f433-4d5b-9f03-36f4cea5981f",
+          "primary_id": "4657c306-0e14-40d3-b770-6accff5c6027"
+        }
+      ]
+    }
+  ]
+}
