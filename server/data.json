@@ -15,7 +15,10 @@
           "type": "form_1",
           "reference_id": "df6bcb6d-acae-4de7-a9b5-d99068d440c8",
           "name": "Step 2",
-          "data": {}
+          "data": {
+            "teste": "tes",
+            "email": "asdas"
+          }
         },
         {
           "type": "form_2",

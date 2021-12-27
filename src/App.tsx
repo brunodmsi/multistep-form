@@ -150,12 +150,12 @@ function App() {
       <Header />
 
       <div className="flex flex-col w-full">
-        <div className="mt-5 grid grid-cols-4 gap-8 max-w-4xl w-full mx-auto">
-          <div className="grid grid-rows-3 col-span-1 grid-cols-1 gap-5">
+        <div className="mt-5 flex flex-row gap-8 max-w-4xl w-full mx-auto">
+          <div className="h-fit grid grid-rows-3 grid-cols-1 gap-5">
             {steps.map(step => (
               <div
                 key={step.reference_id}
-                className={`flex flex-row items-center justify-between p-3 text-white rounded-md cursor-pointer ${selectedStepId === step.reference_id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
+                className={`flex flex-row items-center justify-between p-3 w-32 text-white rounded-sm cursor-pointer ${selectedStepId === step.reference_id ? 'bg-indigo-500' : 'bg-gray-400 hover:bg-gray-600 transition-colors'}`}
                 onClick={() => setSelectedStepId(step.reference_id)}
               >
                 <p className="text-white">{step.name}</p>
@@ -170,7 +170,7 @@ function App() {
             ))}
           </div>
 
-          <div className="col-span-3">
+          <div className="w-full">
             {renderForm(selectedStepId)}
           </div>
         </div>
