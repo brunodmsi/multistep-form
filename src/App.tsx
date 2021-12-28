@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import FormOne from './components/FormOne';
 import FormTwo from './components/FormTwo';
 import Header from './components/Header';
+import { useToast } from './hooks/toast';
 import { getDraftByPrimaryId, updateDraft } from './services/api';
 import getValidationErrors from './utils/getValidationErrors';
 
@@ -51,6 +52,8 @@ function App() {
     data: []
   });
 
+  const { addToast } = useToast()
+
   useEffect(() => {
     getDraftByPrimaryId('4657c306-0e14-40d3-b770-6accff5c6027')
       .then(({ data: response }) => {
@@ -58,8 +61,13 @@ function App() {
         setSteps(draft.data);
         setSelectedStepId(draft.data[0].reference_id);
         setDraftId(draft.id);
+        addToast({
+          title: 'oi',
+          description: 'teste',
+          type: 'success'
+        })
       })
-  }, []);
+  }, [addToast]);
 
   const getErrorByReferenceId = (id: string) => {
     if (!errors.hasError || errors.data.length === 0) 

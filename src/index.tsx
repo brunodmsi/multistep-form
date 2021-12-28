@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
+import { ToastProvider } from './hooks/toast';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ToastProvider>
+      <App />
+    </ToastProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
