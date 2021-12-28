@@ -61,11 +61,6 @@ function App() {
         setSteps(draft.data);
         setSelectedStepId(draft.data[0].reference_id);
         setDraftId(draft.id);
-        addToast({
-          title: 'oi',
-          description: 'teste',
-          type: 'success'
-        })
       })
   }, [addToast]);
 
@@ -103,16 +98,24 @@ function App() {
       }
     }
 
-    setErrors({
-      hasError: true,
-      type: 'draft',
-      data: draftErrorSteps
-    })
+    if (draftErrorSteps.length > 0) {
+      setErrors({
+        hasError: true,
+        type: 'draft',
+        data: draftErrorSteps,
+      })
+
+      addToast({
+        title: 'Salvo com campo(s) sem resposta(s)/invalido(s)',
+        description: "O relatorio foi salvo com campos apresentando erros:\n" + draftErrorSteps.map(error => Object.keys(error.errors).join(', ')),
+        type: 'warning'
+      });
+    }
 
     updateDraft(draftId, { 
       data: steps
     });
-  }, [draftId, steps])
+  }, [draftId, steps, addToast])
 
   const onChangeFields = useCallback((field: string, value: any) => {
     const actualStepIdx = steps.findIndex(step => selectedStepId === step.reference_id);

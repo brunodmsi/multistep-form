@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import {
   FiAlertCircle,
+  FiAlertTriangle,
   FiCheckCircle,
   FiInfo,
   FiXCircle,
@@ -28,8 +29,10 @@ const Toast: React.FC<ToastProps> = ({ style, message }) => {
       return <FiInfo size={24} className={className} />
     if (type === 'success')
       return <FiCheckCircle size={24} className={className} />
-    if (type === 'error')
+    if (type === 'warning')
       return <FiAlertCircle size={24} className={className} />
+    if (type === 'error')
+      return <FiAlertTriangle size={24} className={className} />
   }
 
   useEffect(() => {
@@ -50,6 +53,7 @@ const Toast: React.FC<ToastProps> = ({ style, message }) => {
         ${message.type === 'info' || !message.type ? ' bg-blue-100 text-blue-500': ''}
         ${message.type === 'success' ? ' bg-green-100 text-green-500': ''}
         ${message.type === 'error' ? ' bg-red-100 text-red-500': ''}
+        ${message.type === 'warning' ? ' bg-yellow-100 text-yellow-500': ''}
       `}
       style={style}
     >
